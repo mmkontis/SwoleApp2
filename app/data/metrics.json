@@ -1,0 +1,178 @@
+{
+    "arms": {
+        "score": 85,
+        "explanation": "Well-defined and muscular arms with good symmetry.",
+        "tips": [
+            "Maintain regular arm workouts.",
+            "Incorporate compound exercises.",
+            "Ensure proper nutrition."
+        ]
+    },
+    "chest": {
+        "score": 80,
+        "explanation": "Strong chest with good muscle mass and definition.",
+        "tips": [
+            "Focus on bench press variations.",
+            "Include chest fly exercises.",
+            "Maintain a balanced diet."
+        ]
+    },
+    "abs": {
+        "score": 90,
+        "explanation": "Visible and well-defined abdominal muscles.",
+        "tips": [
+            "Continue core strengthening.",
+            "Maintain low body fat.",
+            "Incorporate planks."
+        ]
+    },
+    "legs": {
+        "score": 75,
+        "explanation": "Muscular legs but less defined compared to upper body.",
+        "tips": [
+            "Increase leg workout intensity.",
+            "Incorporate squats and lunges.",
+            "Focus on balanced training."
+        ]
+    },
+    "back": {
+        "score": 80,
+        "explanation": "Strong back with good muscle development.",
+        "tips": [
+            "Include pull-ups in routine.",
+            "Focus on deadlifts.",
+            "Ensure balanced back exercises."
+        ]
+    },
+    "potential": {
+        "score": 85,
+        "explanation": "High potential for further muscle growth and definition.",
+        "tips": [
+            "Set progressive goals.",
+            "Monitor nutrition closely.",
+            "Diversify workout routines."
+        ]
+    },
+    "gymMonthstillPerfectBody": {
+        "monthsNumber": 6,
+        "explanation": "With focused training, significant improvements can be made.",
+        "tips": [
+            "Create a structured plan.",
+            "Track progress regularly.",
+            "Stay consistent."
+        ]
+    },
+    "genetics": {
+        "score": 80,
+        "explanation": "Good genetic potential for muscle growth and definition.",
+        "tips": [
+            "Leverage genetic strengths.",
+            "Focus on weak areas.",
+            "Maintain a healthy lifestyle."
+        ]
+    },
+    "wellbeing": {
+        "score": 85,
+        "explanation": "Appears to be in good overall health and fitness.",
+        "tips": [
+            "Maintain a balanced diet.",
+            "Ensure adequate rest.",
+            "Stay hydrated."
+        ]
+    },
+    "fatPercentage": {
+        "score": 12,
+        "explanation": "Low body fat percentage, contributing to muscle definition.",
+        "tips": [
+            "Monitor caloric intake.",
+            "Continue cardio exercises.",
+            "Maintain a balanced diet."
+        ]
+    },
+    "symmetry": {
+        "score": 85,
+        "explanation": "Well-balanced muscle development across the body.",
+        "tips": [
+            "Focus on bilateral exercises.",
+            "Ensure even training.",
+            "Monitor form closely."
+        ]
+    },
+    "muscleDefinition": {
+        "score": 88,
+        "explanation": "High level of muscle definition, especially in the upper body.",
+        "tips": [
+            "Maintain low body fat.",
+            "Incorporate HIIT.",
+            "Focus on muscle endurance."
+        ]
+    },
+    "posture": {
+        "score": 80,
+        "explanation": "Good posture with slight room for improvement.",
+        "tips": [
+            "Incorporate posture exercises.",
+            "Focus on core strength.",
+            "Monitor daily posture habits."
+        ]
+    },
+    "flexibility": {
+        "score": 75,
+        "explanation": "Moderate flexibility, could benefit from improvement.",
+        "tips": [
+            "Incorporate stretching routines.",
+            "Practice yoga.",
+            "Focus on dynamic warm-ups."
+        ]
+    },
+    "proportions": {
+        "score": 80,
+        "explanation": "Good body proportions with balanced muscle distribution.",
+        "tips": [
+            "Focus on balanced training.",
+            "Monitor muscle growth.",
+            "Adjust diet as needed."
+        ]
+    },
+    "vascularity": {
+        "score": 78,
+        "explanation": "Visible vascularity, indicating low body fat and good circulation.",
+        "tips": [
+            "Maintain hydration.",
+            "Focus on cardiovascular health.",
+            "Monitor sodium intake."
+        ]
+    },
+    "muscleMass": {
+        "score": 82,
+        "explanation": "Good muscle mass with potential for further growth.",
+        "tips": [
+            "Increase protein intake.",
+            "Focus on hypertrophy training.",
+            "Ensure adequate recovery."
+        ]
+    },
+    "bodyAge": {
+        "age": 28,
+        "explanation": "Body age appears younger than actual age due to fitness level.",
+        "tips": [
+            "Maintain current fitness routine.",
+            "Focus on recovery.",
+            "Monitor health metrics."
+        ]
+    },
+    "improvementSuggestions": [
+        {
+            "suggestion": "Enhance leg definition.",
+            "explanation": "Focus on increasing leg workout intensity and variety."
+        },
+        {
+            "suggestion": "Improve flexibility.",
+            "explanation": "Incorporate regular stretching and flexibility exercises."
+        },
+        {
+            "suggestion": "Increase overall muscle mass.",
+            "explanation": "Focus on hypertrophy training and nutrition."
+        }
+    ]
+}
