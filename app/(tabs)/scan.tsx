@@ -676,6 +676,19 @@ export default function ScanScreen() {
     }
   };
 
+  const getIcon = (type: string) => {
+    switch (type) {
+      case 'fullbody':
+        return require('../../assets/body_icons/fullbody.png');
+      case 'back':
+        return require('../../assets/body_icons/back.png');
+      case 'legs':
+        return require('../../assets/body_icons/legs.png');
+      default:
+        return require('../../assets/body_icons/fullbody.png'); // Default fallback
+    }
+  };
+
   const renderBodyScanItem = ({ item }: { item: { id: number; colors: string[]; title: string; type: string } }) => {
     const photoUri = scannedPhotos[item.type as keyof typeof scannedPhotos];
     const exists = fileExists[item.type as keyof typeof fileExists];
@@ -684,6 +697,9 @@ export default function ScanScreen() {
 
     const scanTypeData = scanData[item.type];
     const hasValidAnalysis = scanTypeData && Object.keys(scanTypeData).length > 0;
+    
+    // Check for both null and empty string
+    const hasPhoto = photoUri && photoUri !== '';
 
     const calculateAverageScore = (data: typeof scanTypeData) => {
       if (!data) return 0;
@@ -697,34 +713,20 @@ export default function ScanScreen() {
       return fats.reduce((a, b) => a + b, 0) / fats.length;
     };
 
-    // Add this check for progress_json
     const hasProgressData = currentDayData?.progress_json?.[item.type];
 
-    console.log(`Rendering ${item.type} scan, photoUri:`, photoUri, 'exists:', exists, 'isUploading:', isUploading);
-
-    const getIcon = (type: string) => {
-      switch (type) {
-        case 'fullbody':
-          return require('../../assets/body_icons/fullbody.png');
-        case 'back':
-          return require('../../assets/body_icons/back.png');
-        case 'legs':
-          return require('../../assets/body_icons/legs.png');
-        default:
-          return require('../../assets/body_icons/fullbody.png');
-      }
-    };
+    console.log(`Rendering ${item.type} scan, photoUri:`, photoUri, 'exists:', exists, 'isUploading:', isUploading, 'hasPhoto:', hasPhoto);
 
     return (
       <View style={styles.bodyScanItem}>
         <LinearGradient
-          colors={item.colors} // Use the specific colors for each item
+          colors={item.colors}
           style={styles.gradient}
         >
           <View style={styles.contentContainer}>
             <View style={styles.textContainer}>
               <Text style={styles.scanItemTitle}>{item.title}</Text>
-              {!photoUri && !isUploading && (
+              {!hasPhoto && !isUploading && (
                 <Text style={styles.scanItemSubtitle}>Get your ratings and recommendations</Text>
               )}
             </View>
@@ -733,7 +735,7 @@ export default function ScanScreen() {
                 <ActivityIndicator size="large" color="#ffffff" />
                 <Text style={styles.loaderText}>Uploading...</Text>
               </View>
-            ) : photoUri && exists ? (
+            ) : hasPhoto ? (
               <>
                 <View style={styles.photoWrapper}>
                   <View style={styles.photoContainer}>
@@ -767,7 +769,20 @@ export default function ScanScreen() {
                     )}
                   </View>
                 </View>
-                {hasProgressData ? (
+                {!isAnalyzing && (
+                  <TouchableOpacity 
+                    style={[styles.analyzeButton, isAnalyzing && styles.analyzeButtonDisabled]}
+                    onPress={() => analyzeImage(photoUri, item.type)}
+                    disabled={isAnalyzing}
+                  >
+                    <View style={styles.analyzeButtonContent}>
+                      {isAnalyzing && <ActivityIndicator size="small" color="#fff" style={styles.analyzeLoader} />}
+                      <Ionicons name="sparkles" size={18} color="#fff" style={styles.analyzeIcon} />
+                      <Text style={styles.analyzeButtonText}>Analyze</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+                {hasProgressData && (
                   <View style={styles.analysisResultContainer}>
                     <View style={styles.resultItem}>
                       <Text style={styles.resultValue}>
@@ -783,46 +798,26 @@ export default function ScanScreen() {
                       <Text style={styles.resultLabel}>Body Fat</Text>
                     </View>
                   </View>
-                ) : !hasValidAnalysis ? (
-                  <TouchableOpacity 
-                    style={[styles.analyzeButton, isAnalyzing && styles.analyzeButtonDisabled]}
-                    onPress={() => analyzeImage(photoUri, item.type)}
-                    disabled={isAnalyzing}
-                  >
-                    <View style={styles.analyzeButtonContent}>
-                      {isAnalyzing && <ActivityIndicator size="small" color="#fff" style={styles.analyzeLoader} />}
-                      <Ionicons name="sparkles" size={18} color="#fff" style={styles.analyzeIcon} />
-                      <Text style={styles.analyzeButtonText}>Analyze</Text>
-                    </View>
-                  </TouchableOpacity>
-                ) : (
-                  <View style={styles.analysisResultContainer}>
-                    <View style={styles.resultItem}>
-                      <Text style={styles.resultValue}>
-                        {calculateAverageScore(scanTypeData).toFixed(1)}
-                      </Text>
-                      <Text style={styles.resultLabel}>General</Text>
-                    </View>
-                    <View style={styles.resultDivider} />
-                    <View style={styles.resultItem}>
-                      <Text style={styles.resultValue}>
-                        {calculateAverageBodyFat(scanTypeData).toFixed(1)}%
-                      </Text>
-                      <Text style={styles.resultLabel}>Body Fat</Text>
-                    </View>
-                  </View>
                 )}
               </>
             ) : (
               <>
                 <View style={styles.iconContainer}>
-                  <Image source={getIcon(item.type)} style={styles.bodyIcon} resizeMode="contain" />
+                  <Image 
+                    source={getIcon(item.type)} 
+                    style={styles.bodyIcon} 
+                    resizeMode="contain"
+                    onError={(error) => {
+                      console.error(`Error loading icon for ${item.type}:`, error);
+                      Alert.alert('Error', `Failed to load icon for ${item.type}`);
+                    }}
+                  />
                 </View>
                 <TouchableOpacity 
                   style={styles.button}
                   onPress={() => openMediaPicker(item.type)}
                 >
-                  <Text style={styles.buttonText}>Begin scan</Text>
+                  <Text style={styles.buttonText}>Take a pic</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -1130,12 +1125,15 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 30,
-    marginTop: 20, // Add some space above the button
+    marginTop: 10,
+    minWidth: 140,
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   youAs10Item: {
     width: itemWidth,
@@ -1301,11 +1299,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
+    paddingVertical: 20,
+    marginBottom: 20,
   },
   bodyIcon: {
-    width: 80,
-    height: 80,
-    tintColor: '#fff', // This will make the icon white. Remove if you want to keep original colors.
+    width: 150,
+    height: 150,
+    tintColor: '#ffffff',
+    opacity: 0.9,
   },
   analysisResultContainer: {
     flexDirection: 'row',

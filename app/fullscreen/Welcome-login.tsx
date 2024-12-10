@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
-import { Link, useRouter } from 'expo-router';
+import { Link, useRouter, useSegments } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import React from 'react';
-import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../../lib/supabase';
+import LoadingScreen from '../components/LoadingScreen';
 
 const { width } = Dimensions.get('window');
 
@@ -14,9 +15,14 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function Home() {
   const router = useRouter();
+  const segments = useSegments();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const handleGoogleLogin = async () => {
     try {
+      setIsLoading(true);
+
       const redirectUrl = Platform.select({
         web: `${window.location.origin}/app/auth/callback`,
         default: makeRedirectUri({
@@ -36,8 +42,6 @@ export default function Home() {
         });
 
         if (error) throw error;
-
-        console.log('Redirecting to Google for authentication...');
       } else {
         // Native-specific OAuth handling
         const { data, error } = await supabase.auth.signInWithOAuth({
@@ -65,8 +69,14 @@ export default function Home() {
               if (sessionError) throw sessionError;
 
               console.log('Google sign-in successful:', sessionData);
-              // Navigate to the daily tab screen
-              router.replace('/(tabs)/daily');
+              
+              // Navigate to the daily tab screen with immediate loading state
+              router.replace({
+                pathname: '/(tabs)/daily',
+                params: {
+                  initial: 'true'
+                }
+              });
             } else {
               throw new Error('No access token or refresh token found in the response');
             }
@@ -77,9 +87,14 @@ export default function Home() {
       }
     } catch (error: any) {
       console.error('Error signing in with Google:', error.message);
-      // Handle error, e.g., show an error message to the user
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isNavigating) {
+    return <LoadingScreen />;
+  }
 
   return (
     <View style={styles.container}>
@@ -91,20 +106,29 @@ export default function Home() {
         <Text style={styles.subtitle}>Track your progress with AI-powered body scanning</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <View style={styles.rowContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleGoogleLogin}>
+        <TouchableOpacity 
+          style={[styles.button, isLoading && styles.buttonDisabled]} 
+          onPress={handleGoogleLogin}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
             <Text style={styles.buttonText}>Sign in with Google</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => {/* Add another action here */}}>
-            <Text style={styles.buttonText}>Another Action</Text>
-          </TouchableOpacity>
-        </View>
+          )}
+        </TouchableOpacity>
         <Link href="/fullscreen/Welcome" asChild>
           <TouchableOpacity style={styles.link}>
             <Text style={styles.linkText}>Go to Welcome Page</Text>
           </TouchableOpacity>
         </Link>
       </View>
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#8A2BE2" />
+          <Text style={styles.loadingText}>Logging you in...</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -149,11 +173,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  rowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
   button: {
     backgroundColor: '#8A2BE2',
     padding: 15,
@@ -178,6 +197,25 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: '#8A2BE2',
+    fontSize: 16,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  loadingText: {
+    color: 'white',
+    marginTop: 10,
     fontSize: 16,
   },
 });

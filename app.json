@@ -27,7 +27,21 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "androidClientId": "1091064359251-pkids3g4894f6mue645rg61l5rslo0sb.apps.googleusercontent.com"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

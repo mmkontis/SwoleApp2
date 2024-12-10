@@ -12,6 +12,7 @@ import {
 } from '../../lib/supabase-functions';
 import { DayData, useDaysStore } from '../../lib/useDaysStore';
 import { calculateAverageBodyFat, calculateTotalScore } from '../../lib/utils';
+import LoadingScreen from '../components/LoadingScreen';
 import MetricDetailBottomSheet from '../components/MetricDetailBottomSheet';
 import metricsData from '../data/metrics.json';
 
@@ -218,6 +219,7 @@ interface ImprovementSuggestion {
 export default function DailyScreen() {
   const router = useRouter();
   const navigation = useNavigation<NavigationProp>();
+  const [initialLoading, setInitialLoading] = useState(true);
 
   React.useEffect(() => {
     if (navigation.getState().routes.length === 1) {
@@ -399,6 +401,21 @@ export default function DailyScreen() {
     outputRange: ['0deg', '180deg', '360deg'],
   });
 
+  // Update the loading effect to be more responsive
+  React.useEffect(() => {
+    // Start with a minimal delay to ensure smooth transition
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show loading screen while initializing
+  if (initialLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -446,7 +463,7 @@ export default function DailyScreen() {
             >
               <Animated.View style={{
                 transform: [
-                  { perspective: 1000 }, // Add perspective
+                  { perspective: 1000 },
                   { rotateY: spin },
                   { scale: scaleAnimation }
                 ],
@@ -472,10 +489,13 @@ export default function DailyScreen() {
               </Animated.View>
             </TouchableOpacity>
           ) : (
-            <Image
-              source={{ uri: 'https://via.placeholder.com/100' }}
-              style={styles.profileImage}
-            />
+            <View style={styles.profileImageContainer}>
+              <Image
+                source={{ uri: 'https://via.placeholder.com/100' }}
+                style={styles.profileImage}
+                resizeMode="cover"
+              />
+            </View>
           )}
         </LinearGradient>
 
@@ -943,5 +963,16 @@ const styles = StyleSheet.create({
   },
   shareButton: {
     padding: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: 'white',
+    marginTop: 10,
+    fontSize: 16,
   },
 });

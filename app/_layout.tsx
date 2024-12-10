@@ -1,15 +1,14 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
+import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme, View } from 'react-native';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
+import LoadingScreen from './components/LoadingScreen';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -26,7 +25,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   if (!fontsLoaded) {
-    return null;
+    return <LoadingScreen />;
   }
 
   return (
@@ -36,16 +35,26 @@ export default function RootLayout() {
           <Stack 
             screenOptions={{ 
               headerShown: false,
-              contentStyle: { backgroundColor: '#000' }
+              contentStyle: { backgroundColor: '#000' },
+              animation: 'fade',
             }}
           >
             <Stack.Screen name="index" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="fullscreen" />
+            <Stack.Screen 
+              name="(tabs)" 
+              options={{
+                animation: 'fade',
+              }}
+            />
+            <Stack.Screen 
+              name="fullscreen"
+              options={{
+                animation: 'fade',
+              }}
+            />
           </Stack>
         </View>
       </ThemeProvider>
-      <StatusBar style="light" />
     </GestureHandlerRootView>
   );
 }
